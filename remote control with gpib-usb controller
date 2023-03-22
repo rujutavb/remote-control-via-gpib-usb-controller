@@ -1,0 +1,39 @@
+
+%% Instrument Connection
+
+% Find a serial port object.
+obj1 = instrfind('Type', 'serial', 'Port', 'COM4', 'Tag', ''); % please use the COM port that corresponds to your gpib-usb controller
+
+% obj1.Terminator = 'CR/LF';
+% obj1.Timeout = 30;
+% set(obj1,'InputBufferSize',3e5); 
+
+% Create the serial port object if it does not exist
+% otherwise use the object that was found.
+if isempty(obj1)
+    obj1 = serial('COM4');          % please use the com port that corresponds to your gpib-usb controller
+else
+    fclose(obj1);                   %disconnects the COM port
+    obj1 = obj1(1);
+end
+
+fopen(obj1);                        %connects the COM port
+%status=get(obj1,'status');
+
+%fprintf(obj1, '++ver');        % this is a command for prologix GPIB-USB controller
+fprintf(obj1, '*IDN?\n');       % This will send the identification string of the Apex Device
+
+% Read and display response
+%ver = fgets(obj1);
+%disp(ver);
+
+% format for sending the desired command is:   fprintf(obj1, 'desired command\n'); 
+%\n is necessary for proper termination of the string
+fprintf(obj1, 'TLS[12]:TPDB?\n');    % Please enter the commands you want to send to the Apex device.
+fprintf(obj1, 'POW[32]:DBM[0]?\n');  % Please enter the commands you want to send to the Apex device.
+
+% Close port
+fclose(obj1);
+
+
+
